@@ -11,6 +11,13 @@ export function getConfigSchema(): AdapterConfigSchema {
   return {
     fields: [
       {
+        key: "timeoutSec",
+        label: "Timeout (sec)",
+        type: "number",
+        default: 0,
+        hint: "Maximum seconds a run can take before being terminated. 0 means no adapter timeout; the execution environment may still enforce a limit.",
+      },
+      {
         key: "engine",
         label: "Execution engine",
         type: "select",

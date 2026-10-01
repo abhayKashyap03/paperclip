@@ -32,10 +32,13 @@ subscription quota exhaustion merely because ACP labels them `limit`.
 | `model` | string | No | Claude model to use (default: `claude-opus-5`) |
 | `promptTemplate` | string | No | Prompt used for all runs |
 | `env` | object | No | Environment variables (supports secret refs) |
-| `timeoutSec` | number | No | Process timeout (0 = no timeout) |
+| `timeoutSec` | number | No | Run timeout in seconds for CLI and ACP (default: `0`, no adapter timeout; execution environments may enforce their own limit) |
 | `graceSec` | number | No | Grace period before force-kill |
 | `maxTurnsPerRun` | number | No | Max agentic turns per heartbeat (defaults to `300`) |
 | `dangerouslySkipPermissions` | boolean | No | Skip permission prompts (default: `true`); required for headless runs where interactive approval is impossible |
+
+Set **Timeout (sec)** during new-agent setup or in the agent's **Run Policy**.
+The dashboard displays saved timeouts and preserves them when other settings change.
 
 ## Default model
 

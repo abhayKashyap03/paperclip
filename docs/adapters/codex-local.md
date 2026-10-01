@@ -22,10 +22,13 @@ The `codex_local` adapter runs OpenAI's Codex CLI locally. It supports session p
 | `model` | string | No | Model to use |
 | `promptTemplate` | string | No | Prompt used for all runs |
 | `env` | object | No | Environment variables (supports secret refs) |
-| `timeoutSec` | number | No | Process timeout (0 = no timeout) |
+| `timeoutSec` | number | No | Run timeout in seconds for CLI and ACP (default: `0`, no adapter timeout; execution environments may enforce their own limit) |
 | `graceSec` | number | No | Grace period before force-kill |
 | `fastMode` | boolean | No | Enables Codex Fast mode. Currently supported on `gpt-5.4` only and burns credits faster |
 | `dangerouslyBypassApprovalsAndSandbox` | boolean | No | Skip safety checks (dev only) |
+
+Set **Timeout (sec)** during new-agent setup or in the agent's **Run Policy**.
+The dashboard displays saved timeouts and preserves them when other settings change.
 
 ## Session Persistence
 
