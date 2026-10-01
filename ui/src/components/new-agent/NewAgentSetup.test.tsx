@@ -138,6 +138,23 @@ it.each(["claude_local", "codex_local"])("persists an explicit zero timeout for 
   expect(mocks.hire).toHaveBeenCalledWith("company-1", expect.objectContaining({ adapterConfig: expect.objectContaining({ timeoutSec: 0 }) }));
 });
 
+it.each(["claude_local", "codex_local"])("rejects a negative %s timeout before testing or hiring", async adapterType => {
+  const container = await renderSetup(adapterType);
+  await click(container, "Use test connection");
+  await setTimeoutInput(container, "1800");
+  await setTimeoutInput(container, "-1");
+  expect(container.textContent).toContain("Enter a number of at least 0.");
+  await click(container, "Run test");
+  expect(mocks.test).toHaveBeenCalledWith(expect.objectContaining({ adapterConfig: expect.objectContaining({ timeoutSec: 1800 }) }));
+  await click(container, "Finish setup");
+  expect(mocks.hire).not.toHaveBeenCalled();
+  const input = container.querySelector<HTMLInputElement>('input[type="number"]')!;
+  await act(async () => input.dispatchEvent(new FocusEvent("focusout", { bubbles: true })));
+  expect(input.value).toBe("1800");
+  await click(container, "Finish setup");
+  expect(mocks.hire).toHaveBeenCalledWith("company-1", expect.objectContaining({ adapterConfig: expect.objectContaining({ timeoutSec: 1800 }) }));
+});
+
 it("does not offer the new timeout control for adapters outside this fix", async () => {
   const container = await renderSetup("gemini_local");
   expect(container.textContent).not.toContain("Timeout (sec)");

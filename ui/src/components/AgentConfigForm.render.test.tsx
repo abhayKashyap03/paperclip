@@ -750,7 +750,7 @@ describe("AgentConfigForm environment selector", () => {
     try {
       const schema = getConfigSchema();
       expect(schema.fields.find(field => field.key === "timeoutSec")).toMatchObject({ type: "number", default: 0 });
-      expect(schema.fields.find(field => field.key === "timeoutSec")?.hint).toContain("0 means no adapter timeout");
+      expect(schema.fields.find(field => field.key === "timeoutSec")?.hint).toContain("four-hour adapter timeout on remote sandbox targets");
       const result = await renderForm([], { adapterType, adapterConfig: { timeoutSec: 1800, model: "saved-model" } });
       roots.push(result.root);
       const policy = result.container.querySelector<HTMLElement>('[data-config-section="run-policy"]')!;
@@ -760,6 +760,13 @@ describe("AgentConfigForm environment selector", () => {
 
       // Saving an unrelated setting must retain the timeout supplied by PATCH.
       await act(() => setInputValue(result.container.querySelector<HTMLInputElement>('input[placeholder="Agent name"]')!, "Renamed"));
+      await clickByText(result.container, "Save");
+      expect(result.onSave.mock.calls[0]?.[0]).not.toHaveProperty("adapterConfig");
+      result.onSave.mockClear();
+      await act(() => setInputValue(timeout, "-1"));
+      expect(timeout.getAttribute("aria-invalid")).toBe("true");
+      expect(policy.textContent).toContain("Enter a number of at least 0.");
+      await act(() => setInputValue(result.container.querySelector<HTMLInputElement>('input[placeholder="Agent name"]')!, "Renamed again"));
       await clickByText(result.container, "Save");
       expect(result.onSave.mock.calls[0]?.[0]).not.toHaveProperty("adapterConfig");
       result.onSave.mockClear();
@@ -781,6 +788,9 @@ describe("AgentConfigForm environment selector", () => {
     const policy = result.container.querySelector<HTMLElement>('[data-config-section="run-policy"]')!;
     expect(policy.textContent).toContain("Timeout (sec)");
     const timeout = Array.from(policy.querySelectorAll<HTMLInputElement>("input")).find(input => input.value === "1800")!;
+    await act(() => setInputValue(timeout, "-1"));
+    expect(result.onChange).not.toHaveBeenCalled();
+    expect(timeout.getAttribute("aria-invalid")).toBe("true");
     await act(() => setInputValue(timeout, "900"));
     expect(result.onChange).toHaveBeenCalledWith({ timeoutSec: 900 });
   });
